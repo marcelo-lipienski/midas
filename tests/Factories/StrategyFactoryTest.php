@@ -16,7 +16,12 @@ class StrategyFactoryTest extends TestCase
 
   public function testCanCreateAStrategy()
   {
-    $strategy = StrategyFactory::use(JWTStrategy::class);
+    $strategy = StrategyFactory::use(
+      JWTStrategy::class,
+      function ($credentials) {
+        return true;
+      }
+    );
 
     $this->assertTrue($strategy instanceof StrategyInterface);
   }
@@ -26,7 +31,12 @@ class StrategyFactoryTest extends TestCase
     $request = $this->createMock(Request::class);
     $handler = $this->createMock(Handler::class);
 
-    $strategy = StrategyFactory::use(JWTStrategy::class);
+    $strategy = StrategyFactory::use(
+      JWTStrategy::class,
+      function ($credentials) {
+        return true;
+      }
+    );
 
     $strategy->set($request, $handler);
 
