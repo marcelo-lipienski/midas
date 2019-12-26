@@ -1,0 +1,32 @@
+{
+    "name": "mlipienski/midas",
+    "description": "PSR7 & PSR15 authentication middleware",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Midas\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "psr/http-message": "^1.0",
+        "psr/http-server-handler": "^1.0",
+        "psr/http-server-middleware": "^1.0",
+        "guzzlehttp/guzzle": "^6.5",
+        "vlucas/phpdotenv": "^3.6"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.5"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Marcelo Lipienski",
+            "email": "marcelo.lipienski@gmail.com"
+        }
+    ]
+}
