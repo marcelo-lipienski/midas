@@ -12,25 +12,18 @@ use Psr\Http\Server\RequestHandlerInterface as Handler;
 
 use Midas\Contracts\StrategyInterface;
 
-class Middleware implements MiddlewareInterface
+class AuthorizationMiddleware implements MiddlewareInterface
 {
-
   protected $strategy;
 
-  public function __construct(string $strategy)
+  public function __construct(StrategyInterface $strategy)
   {
-    $class = new ReflectionClass($strategy);
-
-    if (!$class->implementsInterface(StrategyInterface::class)) {
-      throw new RuntimeException("Given strategy doesn't implement StrategyInterface");
-    }
-
     $this->strategy = $strategy;
   }
 
   public function process(Request $request, Handler $handler) : ResponseInterface
   {
-    $this->strategy = new $this->strategy($request, $handler);
+    $this->strategy->set($request, $handler);
     
     if ($this->strategy->authorized()) {
       return $handler->handle($request);
