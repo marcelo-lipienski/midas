@@ -10,6 +10,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface as Handler;
 
+use Middlewares\Utils\Factory;
+
 use Midas\Contracts\StrategyInterface;
 
 class AuthorizationMiddleware implements MiddlewareInterface
@@ -29,8 +31,8 @@ class AuthorizationMiddleware implements MiddlewareInterface
       return $handler->handle($request);
     }
     
-    $response = $handler->handle($request);
-    return $response->withStatus(401);
+    $response = Factory::createResponse(401);
+    return $response;
   }
 
 }

@@ -35,7 +35,7 @@ class JWTStrategyTest extends TestCase
     $request->expects($this->once())
       ->method('getHeaders')
       ->willReturn([
-        "Authorization" => "Bearer $expectedToken"
+        "Authorization" => [ "Bearer $expectedToken" ]
       ]);
 
     $handler = $this->createMock(Handler::class);

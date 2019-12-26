@@ -15,6 +15,7 @@ use Midas\Contracts\AbstractStrategy;
 class JWTStrategy extends AbstractStrategy
 {
   const HTTP_HEADER_AUTHORIZATION = 'Authorization';
+  const BEARER_TOKEN_POSITION = 0;
   const HTTP_HEADER_POSITION = 1;
   const JWT_PAYLOAD_POSITION = 1;
 
@@ -34,44 +35,26 @@ class JWTStrategy extends AbstractStrategy
     $credentials = json_decode($this->getCredentials());
 
     return call_user_func($this->checkCredentials, $credentials);
-
-    // $client = new Client;
-
-    // try {
-    //   $response = $client->request(
-    //     $config['HTTP_METHOD'],
-    //     $config['API_ENDPOINT'],
-    //     [
-    //       'query' => [
-    //         $config[''] => $credentials->user->cpf
-    //       ]
-    //     ]
-    //   );
-    // } catch (ClientException $e) {
-    //   // 401 unauthorized response from liber-auth.
-    //   return false;
-    // }
-
-    // // yay! user has permission.
-    // return true;
   }
 
-  protected function getToken() : string
+  protected function getBearer()
   {
-    $header = $this->request->getHeaders()[self::HTTP_HEADER_AUTHORIZATION];
-    return explode(' ', $header)[self::HTTP_HEADER_POSITION];
+    $httpAuthenticationHeaders = $this->getHttpAuthorizationHeaders();
+    $bearer = $httpAuthenticationHeaders[self::BEARER_TOKEN_POSITION];
+
+    return explode(' ', $bearer)[self::HTTP_HEADER_POSITION];
+  }
+
+  protected function getHttpAuthorizationHeaders() : array
+  {
+    return $this->request->getHeaders()[self::HTTP_HEADER_AUTHORIZATION];
   }
 
   protected function getCredentials() : string
   {
-    $token = $this->getToken();
+    $token = $this->getBearer();
     $credentials = explode('.', $token)[self::JWT_PAYLOAD_POSITION];
 
     return base64_decode($credentials);
-  }
-
-  protected function authorize() : bool
-  {
-
   }
 }
