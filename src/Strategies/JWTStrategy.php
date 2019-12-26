@@ -3,7 +3,6 @@
 namespace Midas\Strategies;
 
 use ReflectionClass;
-use Composer\Autoload\ClassLoader;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as Handler;
@@ -11,29 +10,19 @@ use Psr\Http\Server\RequestHandlerInterface as Handler;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 
-use Dotenv\Dotenv;
+use Midas\Contracts\AbstractStrategy;
 
-use Midas\Contracts\StrategyInterface;
-
-class JWTStrategy implements StrategyInterface
+class JWTStrategy extends AbstractStrategy
 {
   const HTTP_HEADER_AUTHORIZATION = 'Authorization';
   const HTTP_HEADER_POSITION = 1;
   const JWT_PAYLOAD_POSITION = 1;
 
-  protected $request;
-  protected $handler;
+  protected $checkCredentials;
 
-  public function __construct(Request $request, Handler $handler)
+  public function __construct(callable $checkCredentials)
   {
-    $this->request = $request;
-    $this->handler = $handler;
-
-    $reflection = new ReflectionClass(ClassLoader::class);
-    $vendorDir = dirname($reflection->getFileName(), 3);
-
-    $dotenv = Dotenv::create($vendorDir);
-    $dotenv->load();
+    $this->checkCredentials = $checkCredentials;
   }
 
   /**
@@ -44,25 +33,27 @@ class JWTStrategy implements StrategyInterface
   {
     $credentials = json_decode($this->getCredentials());
 
-    $client = new Client;
+    return call_user_func($this->checkCredentials, $credentials);
 
-    try {
-      $response = $client->request(
-        'GET',
-        getenv('AUTH_ENDPOINT'),
-        [
-          'query' => [
-            'cpf' => $credentials->user->cpf
-          ]
-        ]
-      );
-    } catch (ClientException $e) {
-      // 401 unauthorized response from liber-auth.
-      return false;
-    }
+    // $client = new Client;
 
-    // yay! user has permission.
-    return true;
+    // try {
+    //   $response = $client->request(
+    //     $config['HTTP_METHOD'],
+    //     $config['API_ENDPOINT'],
+    //     [
+    //       'query' => [
+    //         $config[''] => $credentials->user->cpf
+    //       ]
+    //     ]
+    //   );
+    // } catch (ClientException $e) {
+    //   // 401 unauthorized response from liber-auth.
+    //   return false;
+    // }
+
+    // // yay! user has permission.
+    // return true;
   }
 
   protected function getToken() : string
