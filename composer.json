@@ -1,6 +1,6 @@
 {
     "name": "mlipienski/midas",
-    "description": "PSR7 & PSR15 authentication middleware",
+    "description": "PSR7 authorization middleware",
     "type": "library",
     "autoload": {
         "psr-4": {
